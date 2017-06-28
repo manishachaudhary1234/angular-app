@@ -1,0 +1,10 @@
+
+.popover-content {
+width: 500px;
+word-wrap: break-word;
+}
+img{
+  width:20px;
+  height:15px;
+  display: inline-block;
+}

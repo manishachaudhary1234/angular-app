@@ -1,0 +1,197 @@
+<!doctype html>
+<html ng-app="formApp">
+<head>
+
+
+<script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+  
+
+ <!-- Load Angular -->
+ <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.0/angular.min.js"></script>
+
+ <!-- Load ngMessages -->
+ <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.0/angular-messages.min.js"></script>  
+ <!-- Latest compiled and minified CSS -->
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+ <!-- Optional theme -->
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+ <!-- Latest compiled and minified JavaScript -->
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.js"></script>
+
+</head>
+<body>
+  <div ng-controller="formController"> 
+  <!-- <form name="myForm">
+    <input  name="emailInput" ng-model="emailInput" type="email">
+    <input type="checkbox" ng-model="wantNewsletter"  ng-click="toggleSelection()" >
+    <label>{{wantNewsletter}}</label>
+    <br/>
+    <label>Radio Buttons </label>
+    <input type="radio" ng-model="myForm.whichNewsletter" value="weeklyNews">    
+    <input type="radio" ng-model="myForm.whichNewsletter" value="monthlyNews">  
+    <form name="userForm" ng-submit="submitForm()" novalidate> -->
+     <div class="col-md-6">
+       <form name="userForm" ng-submit="submitForm()" ng-model="userForm" novalidate>
+
+        <!-- NAME -->
+        <div class="form-group" ng-class="userForm.name.$error.pattern ? 'has-error' : '' ">
+          <label>Name</label>
+          <input type="text" name="name" class="form-control" ng-model="name" ng-pattern="/^[A-Za-z]+$/" required>
+          <!-- <p ng-show="userForm.name.$invalid && !userForm.name.$pristine" class="help-block">Your name is required.</p>  -->
+          <div ng-messages="userForm.name.$error" ng-show="userForm.name.$touched">
+            <p ng-message="pattern">Only alphabets are allowed </p>
+            <p ng-message="required">Providing a name is mandatory.</p>
+          </div>
+        </div>
+
+       
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" name="password" class="form-control" ng-model="user.password" uib-popover-template="dynamicPopover.templateUrl" popover-trigger="'focus'" popover-placement="right" password>
+          <div ng-messages="userForm.password.$error">
+            <p ng-message="numberValidator">Password should contain at least 1 digit</p>
+            <p ng-message="uppercaseValidator">Password should contain at least 1 uppercase letter</p>
+            <p ng-message="specialCharacterValidator">Password should contain at least 1 special character</p>
+            <p ng-message="eightCharactersValidator">Password has to be exactly 8 characters long</p>
+          </div>
+         
+        </div> 
+      
+
+      
+
+        <!-- SELECT BOX -->
+        <legend>Multiple Selection Box</legend>
+        <div>
+         <select ng-options="item for item in items" multiple
+         ng-model="selectOption" name="selectOption" required></select>
+         <p class="help-block">{{msg}}</p>
+         <label>{{selectOption}}</label>
+         <div ng-messages="userForm.selectOption.$error">
+          <p ng-message="required">Atleast one selection is necessary </p>
+        </div>
+      </div>
+
+
+      <!-- Radio Button -->
+      <fieldset class="form-group">
+        <legend>Radio buttons</legend>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input type="radio" class="form-check-input" ng-model="radioButton" ng-click="selectedRadioButton()"value="option1" checked required>
+            Option one
+          </label>
+        </div>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input type="radio" class="form-check-input" ng-model="radioButton" ng-click="selectedRadioButton()" value="option2" required>
+            Option two
+          </label>
+        </div>
+        <div class="form-check disabled">
+          <label class="form-check-label">
+            <input type="radio" class="form-check-input" ng-model="radioButton" ng-click="selectedRadioButton()" value="option3" required>
+            Option three 
+          </label>
+        </div>
+        <label>{{radioButton}} </label>
+      </fieldset>
+
+      <legend>CheckBox</legend>
+      <div class="form-check">
+        <label class="form-check-label">
+          <input type="checkbox" class="form-check-input" ng-click="toggleSelection()" ng-model="checkbox">
+          Get Notifications
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary" ng-disabled="userForm.$invalid">Submit</button>
+    </form>
+  </div>
+</div>
+
+<script>
+var app= angular.module('formApp', ['ngMessages','ui.bootstrap']);
+angular.module('formApp').directive('password', function() {
+    return {
+      restrict: 'A',
+      require: 'ngModel',
+      link: function(scope, element, attr, ctrl) {
+        function customValidator(ngModelValue) {
+
+        //An uppercase letter
+        if (/[A-Z]/.test(ngModelValue)) {
+            ctrl.$setValidity('uppercaseValidator', true);
+            $("#upperCaseCheck").show()
+
+        } else {
+            ctrl.$setValidity('uppercaseValidator', false);
+            $("#upperCaseCheck").hide()        
+        }
+
+        //A special character
+        if(/[!@#$%^&*()<>]/.test(ngModelValue)){
+          ctrl.$setValidity('specialCharacterValidator',true);
+          $("#specialCharacterCheck").show()   
+        } else{
+          ctrl.$setValidity('specialCharacterValidator',false)
+          $("#specialCharacterCheck").hide()   
+        }
+
+        //A digit
+        if (/[0-9]/.test(ngModelValue)) {
+            ctrl.$setValidity('numberValidator', true);
+             $("#digitCheck").show() 
+        } else {
+            ctrl.$setValidity('numberValidator', false);
+            $("#digitCheck").hide() 
+        }
+
+        //Set length
+        if (ngModelValue.length === 8) {
+            ctrl.$setValidity('eightCharactersValidator', true);
+            $("#lengthCheck").show() 
+        } else {
+            ctrl.$setValidity('eightCharactersValidator', false);
+            $("#lengthCheck").hide() 
+        }
+        return ngModelValue;
+    }
+
+    ctrl.$parsers.push(customValidator);
+           
+      }
+    };
+});
+
+
+app.controller("formController",function($scope){
+  $scope.myForm={}
+  $scope.dynamicPopover = {
+    content: 'Hello, World!',
+    templateUrl: 'password.html',
+    title: 'Title'
+  };
+
+  $('[data-toggle="popover"]').popover();   
+  $scope.items = [1,2,3,4,5,6,7,8,9,20];
+  $scope.emailInput="manisha@gmail.com";
+  $scope.toggleSelection = function toggleSelection() {
+   console.log($scope.checkbox);  
+ };
+ $scope.selectedRadioButton=function selectedRadioButton(){
+  console.log('radiobutton',$scope.radioButton)  
+}
+$scope.submitForm=function submitForm(){
+ alert('Submitted')
+}
+})
+</script>
+</body>
+</html>
